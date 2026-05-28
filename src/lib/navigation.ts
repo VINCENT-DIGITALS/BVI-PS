@@ -9,6 +9,7 @@ import {
   UserRound,
   Bell,
   ScrollText,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -27,6 +28,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Leave", href: "/leave", icon: CalendarDays, permission: "leave.read" },
   { label: "Payroll", href: "/payroll", icon: Wallet, permission: "payroll.read" },
   { label: "Reports", href: "/reports", icon: BarChart3, permission: "reports.read" },
+  { label: "Members", href: "/members", icon: ShieldCheck, permission: "members.manage" },
   { label: "Audit log", href: "/audit", icon: ScrollText, permission: "audit.read" },
   { label: "Settings", href: "/settings", icon: Settings, permission: "settings.manage" },
   { label: "Notifications", href: "/notifications", icon: Bell, permission: null },
