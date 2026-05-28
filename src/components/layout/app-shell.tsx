@@ -2,9 +2,11 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, LogOut, Building2, ChevronsUpDown, Wallet } from "lucide-react";
+import { toast } from "sonner";
 import { NAV_ITEMS } from "@/lib/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -78,7 +80,23 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [signingOut, setSigningOut] = React.useState(false);
+
+  async function handleSignOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setSigningOut(false);
+      toast.error(error.message);
+      return;
+    }
+    router.replace("/login");
+    router.refresh();
+  }
 
   const visibleItems = NAV_ITEMS.filter(
     (item) =>
@@ -177,13 +195,16 @@ export function AppShell({
                   <Link href="/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <form action="/auth/signout" method="post">
-                  <button type="submit" className="w-full">
-                    <DropdownMenuItem className="text-destructive focus:text-destructive">
-                      <LogOut /> Sign out
-                    </DropdownMenuItem>
-                  </button>
-                </form>
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  disabled={signingOut}
+                  onSelect={(event) => {
+                    event.preventDefault();
+                    void handleSignOut();
+                  }}
+                >
+                  <LogOut /> {signingOut ? "Signing out…" : "Sign out"}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
